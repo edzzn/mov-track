@@ -13,7 +13,6 @@ class VideoIn():
         self.width = width
         self.height = height
         self.hasTreadStarted = hasTreadStarted
-        self.needsANewName = False
         self.writer = None
         self.counter = 0
         self.img_counter = 0

@@ -12,7 +12,7 @@ capture_thread = None
 form_class = uic.loadUiType("tracker.ui")[0]
 
 q = Queue.Queue()
-video_in = VideoIn(False, q, width=1920, height=800)
+video_in = VideoIn(False, q, width=1500, height=800)
 
 
 class Ui(QtWidgets.QMainWindow):
@@ -26,14 +26,18 @@ class Ui(QtWidgets.QMainWindow):
         self.tagsButton.clicked.connect(self.tags_clicked)
         self.cordenatesButton.clicked.connect(self.cordenates_clicked)
         self.screenshotButton.clicked.connect(self.screenshot_clicked)
+        self.trackButton.clicked.connect(self.track_clicked)
+
+        # Sliders
+        self.cannySlider_th1.valueChanged.connect(self.cannySlider_th1_changed)
+        self.cannySlider_th2.valueChanged.connect(self.cannySlider_th2_changed)
+        self.cannySlider_th1.valueChanged.connect(self.cannySlider_th1_changed)
+        self.ksizeSlider_w.valueChanged.connect(self.ksizeSlider_w_changed)
+        self.ksizeSlider_h.valueChanged.connect(self.ksizeSlider_h_changed)
 
         self.ImgWidget = OwnImageWidget(self.ImgWidget)
         self.window_width = self.ImgWidget.frameSize().width()
         self.window_height = self.ImgWidget.frameSize().height()
-
-        p = self.ImgWidget.palette()
-        p.setColor(self.ImgWidget.backgroundRole(), QtGui.QColor('red'))
-        self.ImgWidget.setPalette(p)
 
         self.timer = QtCore.QTimer(self)
         self.timer.timeout.connect(self.update_frame)
@@ -69,6 +73,12 @@ class Ui(QtWidgets.QMainWindow):
             video_in.recording = True
 
             video_in.start_record()
+
+    def track_clicked(self):
+        if (not self.tagsButton.isChecked()):
+            self.tagsButton.setChecked(False)
+        else:
+            self.tagsButton.setChecked(True)
 
     def tags_clicked(self):
         if (not self.tagsButton.isChecked()):
@@ -116,6 +126,22 @@ class Ui(QtWidgets.QMainWindow):
         global video_in
         video_in.running = False
         video_in.stop()
+
+    def cannySlider_th1_changed(self):
+        sliderValue = self.cannySlider_th1.value()
+        self.canny_th1.setText(str(sliderValue))
+
+    def cannySlider_th2_changed(self):
+        sliderValue = self.cannySlider_th2.value()
+        self.canny_th2.setText(str(sliderValue))
+
+    def ksizeSlider_h_changed(self):
+        sliderValue = self.ksizeSlider_h.value()
+        self.ksize_h.setText(str(sliderValue))
+
+    def ksizeSlider_w_changed(self):
+        sliderValue = self.ksizeSlider_w.value()
+        self.ksize_w.setText(str(sliderValue))
 
 
 capture_thread = threading.Thread(
