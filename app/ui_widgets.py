@@ -5,6 +5,7 @@ class OwnImageWidget(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(OwnImageWidget, self).__init__(parent)
         self.image = None
+        self.setStyleSheet("background-color: yellow;")
         # self.setImage(QtGui.QImage("ball2.png"))
 
     def setImage(self, image):
