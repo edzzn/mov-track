@@ -17,6 +17,7 @@ class VideoIn():
         self.counter = 0
         self.img_counter = 0
         self.should_take_screenshot = False
+        self.detector = None
 
     def grab(self):
         with mss.mss() as sct:
@@ -26,6 +27,11 @@ class VideoIn():
                 while(self.running):
                     if self.queue.qsize() < 10:
                         frame = np.array(sct.grab(monitor))
+
+                        if (self.detector):
+                            frame = self.detector.detect(
+                                frame)
+
                         self.queue.put(frame)
                         if(self.recording):
                             self._record(frame)
@@ -60,3 +66,6 @@ class VideoIn():
 
     def take_screenshot(self):
         self.should_take_screenshot = True
+
+    def setDetector(self, detector):
+        self.detector = detector

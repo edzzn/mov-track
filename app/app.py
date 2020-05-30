@@ -7,17 +7,18 @@ import numpy as np
 import threading
 import time
 import queue as Queue
+from bordes_detection import DetectionBordes
 
 capture_thread = None
 form_class = uic.loadUiType("tracker.ui")[0]
 
 q = Queue.Queue()
 video_in = VideoIn(False, q, width=1500, height=800)
+canny_detector = DetectionBordes()
 
 
 class Ui(QtWidgets.QMainWindow):
     def __init__(self):
-        # Call the inherited classes __init__ method
         super(Ui, self).__init__()
         uic.loadUi('tracker.ui', self)  # Load the .ui file
 
@@ -31,9 +32,14 @@ class Ui(QtWidgets.QMainWindow):
         # Sliders
         self.cannySlider_th1.valueChanged.connect(self.cannySlider_th1_changed)
         self.cannySlider_th2.valueChanged.connect(self.cannySlider_th2_changed)
-        self.cannySlider_th1.valueChanged.connect(self.cannySlider_th1_changed)
         self.ksizeSlider_w.valueChanged.connect(self.ksizeSlider_w_changed)
         self.ksizeSlider_h.valueChanged.connect(self.ksizeSlider_h_changed)
+
+        # Default slider values
+        self.cannySlider_th1.setValue(canny_detector.canny_th1)
+        self.cannySlider_th2.setValue(canny_detector.canny_th2)
+        self.ksizeSlider_h.setValue(canny_detector.ksize_h)
+        self.ksizeSlider_w.setValue(canny_detector.ksize_w)
 
         self.ImgWidget = OwnImageWidget(self.ImgWidget)
         self.window_width = self.ImgWidget.frameSize().width()
@@ -75,16 +81,24 @@ class Ui(QtWidgets.QMainWindow):
             video_in.start_record()
 
     def track_clicked(self):
-        if (not self.tagsButton.isChecked()):
-            self.tagsButton.setChecked(False)
+        global video_in
+        global canny_detector
+
+        if (not self.trackButton.isChecked()):
+            video_in.setDetector(None)
+            self.trackButton.setChecked(False)
         else:
-            self.tagsButton.setChecked(True)
+            self.trackButton.setChecked(True)
+            video_in.setDetector(canny_detector)
 
     def tags_clicked(self):
+        global canny_detector
         if (not self.tagsButton.isChecked()):
             self.tagsButton.setChecked(False)
+            canny_detector.showTags = False
         else:
             self.tagsButton.setChecked(True)
+            canny_detector.showTags = True
 
     def cordenates_clicked(self):
         if (not self.cordenatesButton.isChecked()):
@@ -105,7 +119,7 @@ class Ui(QtWidgets.QMainWindow):
             frame = q.get()
             img = frame
 
-            img_height, img_width, img_colors = img.shape
+            img_height, img_width, _img_colors = img.shape
             scale_w = float(window_width) / float(img_width)
             scale_h = float(window_height) / float(img_height)
             scale = min([scale_w, scale_h])
@@ -128,20 +142,40 @@ class Ui(QtWidgets.QMainWindow):
         video_in.stop()
 
     def cannySlider_th1_changed(self):
+        global canny_detector
+
         sliderValue = self.cannySlider_th1.value()
         self.canny_th1.setText(str(sliderValue))
+
+        canny_detector.setCanny(
+            canny_th2=self.cannySlider_th2.value()
+        )
 
     def cannySlider_th2_changed(self):
         sliderValue = self.cannySlider_th2.value()
         self.canny_th2.setText(str(sliderValue))
 
+        canny_detector.setCanny(
+            canny_th1=self.cannySlider_th1.value()
+        )
+
     def ksizeSlider_h_changed(self):
         sliderValue = self.ksizeSlider_h.value()
+        sliderValue -= (1 - sliderValue % 2)
+
         self.ksize_h.setText(str(sliderValue))
+        canny_detector.setKsize(
+            ksize_h=sliderValue
+        )
 
     def ksizeSlider_w_changed(self):
         sliderValue = self.ksizeSlider_w.value()
+        sliderValue -= (1 - sliderValue % 2)
+
         self.ksize_w.setText(str(sliderValue))
+        canny_detector.setKsize(
+            ksize_w=sliderValue
+        )
 
 
 capture_thread = threading.Thread(

@@ -372,6 +372,9 @@
             <layout class="QHBoxLayout" name="horizontalLayout_6">
              <item>
               <widget class="QSlider" name="cannySlider_th1">
+               <property name="maximum">
+                <number>255</number>
+               </property>
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
@@ -405,6 +408,9 @@
             <layout class="QHBoxLayout" name="horizontalLayout_7">
              <item>
               <widget class="QSlider" name="cannySlider_th2">
+               <property name="maximum">
+                <number>255</number>
+               </property>
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
@@ -445,6 +451,12 @@
             <layout class="QHBoxLayout" name="horizontalLayout_8">
              <item>
               <widget class="QSlider" name="ksizeSlider_h">
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>30</number>
+               </property>
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
@@ -478,6 +490,12 @@
             <layout class="QHBoxLayout" name="horizontalLayout_9">
              <item>
               <widget class="QSlider" name="ksizeSlider_w">
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>30</number>
+               </property>
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
