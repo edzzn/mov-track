@@ -64,7 +64,7 @@ class ObjectsRecord():
             if (i in index_objects_to_keep):
                 objects_to_keep.append(self.objects[i])
 
-        self.objects = objects_to_keep
+        # self.objects = objects_to_keep
 
         # ? Bellow code is present for debugging
         # print(f"from: {len(self.objects)} - Keeping: {len(objects_to_keep)}")
@@ -82,6 +82,7 @@ class ObjectsRecord():
                     object.add_step_to_path(old_object.x, old_object.y)
 
     def add_all(self, records):
+        print(f"adding: {len(records)}")
         objects_from_last_frame = self.objects[:]
         self.objects = records
         self.ignored_objects = []

@@ -32,10 +32,11 @@ class DetectionBordes:
 
         imgCanny = cv2.Canny(imgBlur, self.canny_th1, self.canny_th2)
 
-        validContours = self.getContornos(imgCanny, imgContorno)
+        line_contours = self.getContornos(imgCanny, imgContorno)
+        circle_contours = self.getCircles(imgBlur, imgContorno)
+        validContours = line_contours + circle_contours
 
         object_records.add_all(validContours)
-        # print(object_records)
 
         for i, countour in enumerate(object_records.objects):
             countour.object_type = f"{countour.object_type} - {i}"
@@ -67,6 +68,22 @@ class DetectionBordes:
         )
 
         return imgContorno
+
+    def getCircles(self, gray_image, imgContorno):
+        valid_objects = []
+        circles = cv2.HoughCircles(gray_image, cv2.HOUGH_GRADIENT, 1.2, 100)
+
+        if circles is not None:
+            circles = np.round(circles[0, :]).astype("int")
+
+            for (c_x, c_y, c_r) in circles:
+                x = c_x - c_r
+                y = c_y - c_r
+                w = 2 * c_r
+                h = 2 * c_r
+                circle_object = RegisteredObject(x, y, w, h, 'Circulo')
+                valid_objects.append(circle_object)
+        return valid_objects
 
     def _draw_contour(self, image, object, color=(0, 255, 0), trickness=2):
         cv2.rectangle(
