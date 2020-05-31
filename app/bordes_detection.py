@@ -35,6 +35,7 @@ class DetectionBordes:
         validContours = self.getContornos(imgCanny, imgContorno)
 
         object_records.add_all(validContours)
+        # print(object_records)
 
         for i, countour in enumerate(object_records.objects):
             countour.object_type = f"{countour.object_type} - {i}"
@@ -46,6 +47,12 @@ class DetectionBordes:
                 imgContorno,
                 countour
             )
+
+            self._draw_path(
+                imgContorno,
+                countour
+            )
+
             self._draw_center(
                 imgContorno,
                 countour
@@ -69,6 +76,17 @@ class DetectionBordes:
             color,
             trickness
         )
+
+    def _draw_path(self, image, object, color=(255, 0, 255)):
+        print(f"Path: {object.path}")
+        for point in object.path:
+            cv2.circle(
+                image,
+                (point[0]+(object.w//2), point[1]+(object.h//2)),
+                1,
+                color,
+                2
+            )
 
     def _draw_center(self, image, object, color=(0, 0, 255)):
         cv2.circle(
