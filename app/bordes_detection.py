@@ -1,5 +1,7 @@
 import cv2
 import numpy as np
+from PIL import Image
+from video_input import RegisteredObject
 
 
 class DetectionBordes:
@@ -22,23 +24,73 @@ class DetectionBordes:
         if (ksize_w):
             self.ksize_w = ksize_w
 
-    def detect(self, img):
+    def detect(self, img, debugFrames=[], object_records=None):
         imgContorno = img.copy()
         imgGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         imgBlur = cv2.GaussianBlur(imgGray, (self.ksize_h, self.ksize_w), 0)
 
         imgCanny = cv2.Canny(imgBlur, self.canny_th1, self.canny_th2)
-        self.getContornos(imgCanny, imgContorno)
 
-        # print(f"org: {img.shape}\t imgBlur: {imgBlur.shape}")
+        validContours = self.getContornos(imgCanny, imgContorno)
+
+        for countour in validContours:
+            self._draw_contour_name(
+                imgContorno,
+                countour
+            )
+            self._draw_contour(
+                imgContorno,
+                countour
+            )
+
+        debugFrames.append(
+            cv2.cvtColor(imgBlur, cv2.COLOR_GRAY2RGB)
+        )
+
+        debugFrames.append(
+            cv2.cvtColor(imgCanny, cv2.COLOR_GRAY2RGB)
+        )
+
         return imgContorno
 
-    def getContornos(self, imagen, imgContorno):
-        ret, thresh = cv2.threshold(imagen, 127, 255, 0)
-        _, contorno, jerarquia = cv2.findContours(
+    def _draw_contour(self, image, object):
+        cv2.rectangle(
+            image,
+            (object.x, object.y),
+            (object.x+object.w, object.y+object.h),
+            (0, 255, 0),
+            2
+        )
+
+    def _draw_contour_name(self, image, object):
+        if (self.showTags):
+            cv2.putText(
+                image,
+                object.object_type,
+                (object.x+(object.w//2)-10, object.y+(object.h//2) - 10),
+                cv2.FONT_HERSHEY_COMPLEX,
+                0.7,
+                (0, 0, 0),
+                4
+            )
+            cv2.putText(
+                image,
+                object.object_type,
+                (object.x+(object.w//2)-10, object.y+(object.h//2) - 10),
+                cv2.FONT_HERSHEY_COMPLEX, 0.7,
+                (0, 255, 0),
+                2
+            )
+
+    def getContornos(self, img, imgContorno):
+        valid_Contours = []
+
+        _ret, thresh = cv2.threshold(img, 127, 255, 0)
+        _, contour, _jerarquia = cv2.findContours(
             thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-        for cnt in contorno:
+        for cnt in contour:
             area = cv2.contourArea(cnt)
+            object_type = ''
             if area > 450:
                 cv2.drawContours(imgContorno, cnt, -1, (255, 0, 0), 3)
                 peri = cv2.arcLength(cnt, True)
@@ -46,28 +98,16 @@ class DetectionBordes:
                 objCor = len(approx)
                 x, y, w, h = cv2.boundingRect(approx)
                 if objCor == 3:
-                    objectType = "Triangulo"
+                    object_type = "Triangulo"
                 elif objCor == 4:
                     aspRatio = w/float(h)
                     if aspRatio > 0.98 and aspRatio < 1.03:
-                        objectType = "Cuadrado"
+                        object_type = "Cuadrado"
                     else:
-                        objectType = "Rectangulo"
-                elif objCor == 5:
-                    objectType = "Pentagono"
-                elif objCor > 5:
-                    objectType = "Circulo"
-                else:
-                    objectType = "None"
-                cv2.rectangle(imgContorno, (x, y), (x+w, y+h), (0, 255, 0), 2)
+                        object_type = "Rectangulo"
 
-                if (self.showTags):
-                    # Mostrando el texto dos veces para tener margen
-                    cv2.putText(imgContorno, objectType,
-                                (x+(w//2)-10, y+(h//2) -
-                                 10), cv2.FONT_HERSHEY_COMPLEX, 0.7,
-                                (0, 0, 0), 4)
-                    cv2.putText(imgContorno, objectType,
-                                (x+(w//2)-10, y+(h//2) -
-                                 10), cv2.FONT_HERSHEY_COMPLEX, 0.7,
-                                (0, 255, 0), 2)
+                if objCor < 5 and object_type:
+                    valid_Contour = RegisteredObject(x, y, w, h, object_type)
+                    valid_Contours.append(valid_Contour)
+
+        return valid_Contours

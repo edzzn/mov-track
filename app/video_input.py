@@ -1,6 +1,34 @@
 import mss
 import numpy as np
 import cv2
+import time
+
+
+class RegisteredObject():
+    def __init__(self, x, y, w, h, object_type, last_record_time=time.localtime()):
+        self.x = x
+        self.y = y
+        self.w = w
+        self.h = h
+        self.object_type = object_type
+        self.last_record_time = last_record_time
+
+    def __str__(self):
+        return f"{self.object_type}: [{self.x},{self.y}], {self.last_record_time}"
+
+
+class ObjectsRecord():
+    def __init__(self):
+        self.objects = []
+
+    def add_object(self, object):
+        print(f"adding: {object}")
+
+    def add_objects(self, objects):
+        print(f"adding: {objects}")
+
+    def __str__(self):
+        return f"ObjectsRecorded: {len(self.objects)}"
 
 
 class VideoIn():
@@ -19,27 +47,42 @@ class VideoIn():
         self.should_take_screenshot = False
         self.detector = None
 
+        # Keep track of registered Objects
+        self.objects_record = ObjectsRecord()
+
     def grab(self):
         with mss.mss() as sct:
             monitor = {'top': self.top, 'left': self.left,
                        'width': self.width, 'height': self.height}
             while(True):
                 while(self.running):
+                    debugFrames = []
                     if self.queue.qsize() < 10:
                         frame = np.array(sct.grab(monitor))
+                        img = cv2.cvtColor(frame, cv2.COLOR_BGRA2BGR)
 
                         if (self.detector):
-                            frame = self.detector.detect(
-                                frame)
+                            img = self.detector.detect(
+                                img,
+                                debugFrames=debugFrames,
+                                # object_records=self.objects_record
+                            )
 
-                        self.queue.put(frame)
+                        self._addToQueue(img, debugFrames)
+
                         if(self.recording):
-                            self._record(frame)
+                            self._record(img)
 
                         if(self.should_take_screenshot):
-                            self._take_screenshot(frame)
+                            self._take_screenshot(img)
                     else:
                         print(self.queue.qsize())
+
+    def _addToQueue(self, image, debug):
+        if (len(debug) == 0):
+            self.queue.put((image, None))
+        else:
+            self.queue.put((image, *debug))
 
     def _record(self, image):
         self.img_counter += 1
