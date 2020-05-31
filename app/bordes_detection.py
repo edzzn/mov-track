@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 from PIL import Image
+from video_input import RegisteredObject
 
 
 class DetectionBordes:
@@ -23,13 +24,14 @@ class DetectionBordes:
         if (ksize_w):
             self.ksize_w = ksize_w
 
-    def detect(self, img, debugFrames=[]):
+    def detect(self, img, debugFrames=[], object_records=None):
         imgContorno = img.copy()
         imgGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         imgBlur = cv2.GaussianBlur(imgGray, (self.ksize_h, self.ksize_w), 0)
 
         imgCanny = cv2.Canny(imgBlur, self.canny_th1, self.canny_th2)
-        self.getContornos(imgCanny, imgContorno)
+
+        validContours = self.getContornos(imgCanny, imgContorno)
 
         debugFrames.append(
             cv2.cvtColor(imgBlur, cv2.COLOR_GRAY2RGB)
@@ -39,7 +41,13 @@ class DetectionBordes:
             cv2.cvtColor(imgCanny, cv2.COLOR_GRAY2RGB)
         )
 
+        if(object_records):
+            object_records.add_objects(validContours)
+
         return imgContorno
+
+
+# << << << < Updated upstream
 
     def _draw_contour_name(self, image, name, x, y, w, h):
         if (self.showTags):
@@ -61,14 +69,21 @@ class DetectionBordes:
                 2
             )
 
-    def getContornos(self, img, imgContorno):
-        _ret, thresh = cv2.threshold(img, 127, 255, 0)
+    # def getContornos(self, img, imgContorno):
+    #     _ret, thresh = cv2.threshold(img, 127, 255, 0)
 
+    #     _, contour, _jerarquia = cv2.findContours(
+# == == ===
+    def getContornos(self, img, imgContorno):
+        valid_Contours = []
+
+        _ret, thresh = cv2.threshold(img, 127, 255, 0)
         _, contour, _jerarquia = cv2.findContours(
+            # >>>>>> > Stashed changes
             thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         for cnt in contour:
             area = cv2.contourArea(cnt)
-            objectType = ''
+            object_type = ''
             if area > 450:
                 cv2.drawContours(imgContorno, cnt, -1, (255, 0, 0), 3)
                 peri = cv2.arcLength(cnt, True)
@@ -76,17 +91,22 @@ class DetectionBordes:
                 objCor = len(approx)
                 x, y, w, h = cv2.boundingRect(approx)
                 if objCor == 3:
-                    objectType = "Triangulo"
+                    object_type = "Triangulo"
                 elif objCor == 4:
                     aspRatio = w/float(h)
                     if aspRatio > 0.98 and aspRatio < 1.03:
-                        objectType = "Cuadrado"
+                        object_type = "Cuadrado"
                     else:
-                        objectType = "Rectangulo"
+                        object_type = "Rectangulo"
 
-                if objCor < 5 and objectType:
+                if objCor < 5 and object_type:
+                    print(f"objects: {object_type}")
+                    valid_Contour = RegisteredObject(x, y, object_type)
+                    valid_Contours.append(valid_Contour)
+
                     cv2.rectangle(imgContorno, (x, y),
                                   (x+w, y+h), (0, 255, 0), 2)
 
                     self._draw_contour_name(
-                        imgContorno, objectType, x, y, w, h)
+                        imgContorno, object_type, x, y, w, h)
+        return valid_Contours
