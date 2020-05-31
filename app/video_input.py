@@ -3,32 +3,7 @@ import numpy as np
 import cv2
 import time
 
-
-class RegisteredObject():
-    def __init__(self, x, y, w, h, object_type, last_record_time=time.localtime()):
-        self.x = x
-        self.y = y
-        self.w = w
-        self.h = h
-        self.object_type = object_type
-        self.last_record_time = last_record_time
-
-    def __str__(self):
-        return f"{self.object_type}: [{self.x},{self.y}], {self.last_record_time}"
-
-
-class ObjectsRecord():
-    def __init__(self):
-        self.objects = []
-
-    def add_object(self, object):
-        print(f"adding: {object}")
-
-    def add_objects(self, objects):
-        print(f"adding: {objects}")
-
-    def __str__(self):
-        return f"ObjectsRecorded: {len(self.objects)}"
+from object_records import ObjectsRecord
 
 
 class VideoIn():
@@ -65,7 +40,7 @@ class VideoIn():
                             img = self.detector.detect(
                                 img,
                                 debugFrames=debugFrames,
-                                # object_records=self.objects_record
+                                object_records=self.objects_record
                             )
 
                         self._addToQueue(img, debugFrames)

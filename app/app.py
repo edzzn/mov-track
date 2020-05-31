@@ -197,7 +197,8 @@ class Ui(QtWidgets.QMainWindow):
 
 
 capture_thread = threading.Thread(
-    target=video_in.grab)
+    target=video_in.grab
+)
 
 # Iniciar instancia de QT
 app = QtWidgets.QApplication(sys.argv)

@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 from PIL import Image
-from video_input import RegisteredObject
+from object_records import RegisteredObject
 
 
 class DetectionBordes:
@@ -34,7 +34,10 @@ class DetectionBordes:
 
         validContours = self.getContornos(imgCanny, imgContorno)
 
-        for countour in validContours:
+        object_records.add_all(validContours)
+
+        for i, countour in enumerate(object_records.objects):
+            countour.object_type = f"{countour.object_type} - {i}"
             self._draw_contour_name(
                 imgContorno,
                 countour
@@ -58,25 +61,25 @@ class DetectionBordes:
 
         return imgContorno
 
-    def _draw_contour(self, image, object):
+    def _draw_contour(self, image, object, color=(0, 255, 0), trickness=2):
         cv2.rectangle(
             image,
             (object.x, object.y),
             (object.x+object.w, object.y+object.h),
-            (0, 255, 0),
-            2
+            color,
+            trickness
         )
 
-    def _draw_center(self, image, object):
+    def _draw_center(self, image, object, color=(0, 0, 255)):
         cv2.circle(
             image,
             (object.x+(object.w//2), object.y+(object.h//2)),
             1,
-            (0, 0, 255),
+            color,
             2
         )
 
-    def _draw_contour_name(self, image, object):
+    def _draw_contour_name(self, image, object, color=(0, 255, 0)):
         if (self.showTags):
             cv2.putText(
                 image,
@@ -93,7 +96,7 @@ class DetectionBordes:
                 (object.x+(object.w//2)-10, object.y+(object.h//2) - 10),
                 cv2.FONT_HERSHEY_COMPLEX,
                 0.8,
-                (0, 255, 0),
+                color,
                 2
             )
 
@@ -114,7 +117,7 @@ class DetectionBordes:
                 (object.x+(object.w//2) + 7, object.y+(object.h//2) + 7),
                 cv2.FONT_HERSHEY_PLAIN,
                 1,
-                (0, 255, 0),
+                color,
                 1
             )
 
