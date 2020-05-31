@@ -41,12 +41,34 @@ class DetectionBordes:
 
         return imgContorno
 
-    def getContornos(self, imagen, imgContorno):
-        ret, thresh = cv2.threshold(imagen, 127, 255, 0)
-        _, contorno, jerarquia = cv2.findContours(
+    def _draw_contour_name(self, image, name, x, y, w, h):
+        if (self.showTags):
+            cv2.putText(
+                image,
+                name,
+                (x+(w//2)-10, y+(h//2) - 10),
+                cv2.FONT_HERSHEY_COMPLEX,
+                0.7,
+                (0, 0, 0),
+                4
+            )
+            cv2.putText(
+                image,
+                name,
+                (x+(w//2)-10, y+(h//2) - 10),
+                cv2.FONT_HERSHEY_COMPLEX, 0.7,
+                (0, 255, 0),
+                2
+            )
+
+    def getContornos(self, img, imgContorno):
+        _ret, thresh = cv2.threshold(img, 127, 255, 0)
+
+        _, contour, _jerarquia = cv2.findContours(
             thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-        for cnt in contorno:
+        for cnt in contour:
             area = cv2.contourArea(cnt)
+            objectType = ''
             if area > 450:
                 cv2.drawContours(imgContorno, cnt, -1, (255, 0, 0), 3)
                 peri = cv2.arcLength(cnt, True)
@@ -66,22 +88,5 @@ class DetectionBordes:
                     cv2.rectangle(imgContorno, (x, y),
                                   (x+w, y+h), (0, 255, 0), 2)
 
-                    if (self.showTags):
-                        # Mostrando el texto dos veces para tener borde
-                        cv2.putText(
-                            imgContorno,
-                            objectType,
-                            (x+(w//2)-10, y+(h//2) - 10),
-                            cv2.FONT_HERSHEY_COMPLEX,
-                            0.7,
-                            (0, 0, 0),
-                            4
-                        )
-                        cv2.putText(
-                            imgContorno,
-                            objectType,
-                            (x+(w//2)-10, y+(h//2) - 10),
-                            cv2.FONT_HERSHEY_COMPLEX, 0.7,
-                            (0, 255, 0),
-                            2
-                        )
+                    self._draw_contour_name(
+                        imgContorno, objectType, x, y, w, h)
