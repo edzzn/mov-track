@@ -33,6 +33,16 @@ class DetectionBordes:
 
         validContours = self.getContornos(imgCanny, imgContorno)
 
+        for countour in validContours:
+            self._draw_contour_name(
+                imgContorno,
+                countour
+            )
+            self._draw_contour(
+                imgContorno,
+                countour
+            )
+
         debugFrames.append(
             cv2.cvtColor(imgBlur, cv2.COLOR_GRAY2RGB)
         )
@@ -41,20 +51,23 @@ class DetectionBordes:
             cv2.cvtColor(imgCanny, cv2.COLOR_GRAY2RGB)
         )
 
-        if(object_records):
-            object_records.add_objects(validContours)
-
         return imgContorno
 
+    def _draw_contour(self, image, object):
+        cv2.rectangle(
+            image,
+            (object.x, object.y),
+            (object.x+object.w, object.y+object.h),
+            (0, 255, 0),
+            2
+        )
 
-# << << << < Updated upstream
-
-    def _draw_contour_name(self, image, name, x, y, w, h):
+    def _draw_contour_name(self, image, object):
         if (self.showTags):
             cv2.putText(
                 image,
-                name,
-                (x+(w//2)-10, y+(h//2) - 10),
+                object.object_type,
+                (object.x+(object.w//2)-10, object.y+(object.h//2) - 10),
                 cv2.FONT_HERSHEY_COMPLEX,
                 0.7,
                 (0, 0, 0),
@@ -62,24 +75,18 @@ class DetectionBordes:
             )
             cv2.putText(
                 image,
-                name,
-                (x+(w//2)-10, y+(h//2) - 10),
+                object.object_type,
+                (object.x+(object.w//2)-10, object.y+(object.h//2) - 10),
                 cv2.FONT_HERSHEY_COMPLEX, 0.7,
                 (0, 255, 0),
                 2
             )
 
-    # def getContornos(self, img, imgContorno):
-    #     _ret, thresh = cv2.threshold(img, 127, 255, 0)
-
-    #     _, contour, _jerarquia = cv2.findContours(
-# == == ===
     def getContornos(self, img, imgContorno):
         valid_Contours = []
 
         _ret, thresh = cv2.threshold(img, 127, 255, 0)
         _, contour, _jerarquia = cv2.findContours(
-            # >>>>>> > Stashed changes
             thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         for cnt in contour:
             area = cv2.contourArea(cnt)
@@ -100,13 +107,7 @@ class DetectionBordes:
                         object_type = "Rectangulo"
 
                 if objCor < 5 and object_type:
-                    print(f"objects: {object_type}")
-                    valid_Contour = RegisteredObject(x, y, object_type)
+                    valid_Contour = RegisteredObject(x, y, w, h, object_type)
                     valid_Contours.append(valid_Contour)
 
-                    cv2.rectangle(imgContorno, (x, y),
-                                  (x+w, y+h), (0, 255, 0), 2)
-
-                    self._draw_contour_name(
-                        imgContorno, object_type, x, y, w, h)
         return valid_Contours

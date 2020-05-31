@@ -5,9 +5,11 @@ import time
 
 
 class RegisteredObject():
-    def __init__(self, x, y, object_type, last_record_time=time.localtime()):
+    def __init__(self, x, y, w, h, object_type, last_record_time=time.localtime()):
         self.x = x
         self.y = y
+        self.w = w
+        self.h = h
         self.object_type = object_type
         self.last_record_time = last_record_time
 
