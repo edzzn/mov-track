@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from PIL import Image
 
 
 class DetectionBordes:
@@ -22,7 +23,7 @@ class DetectionBordes:
         if (ksize_w):
             self.ksize_w = ksize_w
 
-    def detect(self, img):
+    def detect(self, img, debugFrames=[]):
         imgContorno = img.copy()
         imgGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         imgBlur = cv2.GaussianBlur(imgGray, (self.ksize_h, self.ksize_w), 0)
@@ -30,7 +31,14 @@ class DetectionBordes:
         imgCanny = cv2.Canny(imgBlur, self.canny_th1, self.canny_th2)
         self.getContornos(imgCanny, imgContorno)
 
-        # print(f"org: {img.shape}\t imgBlur: {imgBlur.shape}")
+        debugFrames.append(
+            cv2.cvtColor(imgBlur, cv2.COLOR_GRAY2RGB)
+        )
+
+        debugFrames.append(
+            cv2.cvtColor(imgCanny, cv2.COLOR_GRAY2RGB)
+        )
+
         return imgContorno
 
     def getContornos(self, imagen, imgContorno):
@@ -53,21 +61,27 @@ class DetectionBordes:
                         objectType = "Cuadrado"
                     else:
                         objectType = "Rectangulo"
-                elif objCor == 5:
-                    objectType = "Pentagono"
-                elif objCor > 5:
-                    objectType = "Circulo"
-                else:
-                    objectType = "None"
-                cv2.rectangle(imgContorno, (x, y), (x+w, y+h), (0, 255, 0), 2)
 
-                if (self.showTags):
-                    # Mostrando el texto dos veces para tener margen
-                    cv2.putText(imgContorno, objectType,
-                                (x+(w//2)-10, y+(h//2) -
-                                 10), cv2.FONT_HERSHEY_COMPLEX, 0.7,
-                                (0, 0, 0), 4)
-                    cv2.putText(imgContorno, objectType,
-                                (x+(w//2)-10, y+(h//2) -
-                                 10), cv2.FONT_HERSHEY_COMPLEX, 0.7,
-                                (0, 255, 0), 2)
+                if objCor < 5 and objectType:
+                    cv2.rectangle(imgContorno, (x, y),
+                                  (x+w, y+h), (0, 255, 0), 2)
+
+                    if (self.showTags):
+                        # Mostrando el texto dos veces para tener borde
+                        cv2.putText(
+                            imgContorno,
+                            objectType,
+                            (x+(w//2)-10, y+(h//2) - 10),
+                            cv2.FONT_HERSHEY_COMPLEX,
+                            0.7,
+                            (0, 0, 0),
+                            4
+                        )
+                        cv2.putText(
+                            imgContorno,
+                            objectType,
+                            (x+(w//2)-10, y+(h//2) - 10),
+                            cv2.FONT_HERSHEY_COMPLEX, 0.7,
+                            (0, 255, 0),
+                            2
+                        )

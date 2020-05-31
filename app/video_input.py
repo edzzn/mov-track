@@ -25,21 +25,30 @@ class VideoIn():
                        'width': self.width, 'height': self.height}
             while(True):
                 while(self.running):
+                    debugFrames = []
                     if self.queue.qsize() < 10:
                         frame = np.array(sct.grab(monitor))
+                        img = cv2.cvtColor(frame, cv2.COLOR_BGRA2BGR)
 
                         if (self.detector):
-                            frame = self.detector.detect(
-                                frame)
+                            img = self.detector.detect(
+                                img, debugFrames=debugFrames)
 
-                        self.queue.put(frame)
+                        self._addToQueue(img, debugFrames)
+
                         if(self.recording):
-                            self._record(frame)
+                            self._record(img)
 
                         if(self.should_take_screenshot):
-                            self._take_screenshot(frame)
+                            self._take_screenshot(img)
                     else:
                         print(self.queue.qsize())
+
+    def _addToQueue(self, image, debug):
+        if (len(debug) == 0):
+            self.queue.put((image, None))
+        else:
+            self.queue.put((image, *debug))
 
     def _record(self, image):
         self.img_counter += 1

@@ -13,7 +13,7 @@ capture_thread = None
 form_class = uic.loadUiType("tracker.ui")[0]
 
 q = Queue.Queue()
-video_in = VideoIn(False, q, width=1500, height=800)
+video_in = VideoIn(False, q, width=600, height=480, top=200, left=100)
 canny_detector = DetectionBordes()
 
 
@@ -42,8 +42,8 @@ class Ui(QtWidgets.QMainWindow):
         self.ksizeSlider_w.setValue(canny_detector.ksize_w)
 
         self.ImgWidget = OwnImageWidget(self.ImgWidget)
-        self.window_width = self.ImgWidget.frameSize().width()
-        self.window_height = self.ImgWidget.frameSize().height()
+        self.ImgWidget2 = OwnImageWidget(self.ImgWidget2)
+        self.ImgWidget3 = OwnImageWidget(self.ImgWidget3)
 
         self.timer = QtCore.QTimer(self)
         self.timer.timeout.connect(self.update_frame)
@@ -113,28 +113,43 @@ class Ui(QtWidgets.QMainWindow):
     def update_frame(self):
         if not q.empty():
             global video_in
-            window_width = 1000
-            window_height = 800
 
-            frame = q.get()
-            img = frame
+            frame, *debug = q.get()
 
-            img_height, img_width, _img_colors = img.shape
-            scale_w = float(window_width) / float(img_width)
-            scale_h = float(window_height) / float(img_height)
-            scale = min([scale_w, scale_h])
-
-            if scale == 0:
-                scale = 1
-
-            img = cv2.resize(img, None, fx=scale, fy=scale,
-                             interpolation=cv2.INTER_CUBIC)
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-            height, width, bpc = img.shape
-            bytes_per_line = bpc * width
-            image = QtGui.QImage(img.data, width, height,
-                                 bytes_per_line, QtGui.QImage.Format_RGB888)
+            image = self._np_image_to_q_image(frame)
             self.ImgWidget.setImage(image)
+
+            # Add debug
+            if(len(debug) == 1 and isinstance(debug[0], np.ndarray)):
+                q_image = self._np_image_to_q_image(debug[0])
+                self.ImgWidget2.setImage(q_image)
+
+            if(len(debug) == 2):
+                self.ImgWidget2.setImage(self._np_image_to_q_image(debug[0]))
+                self.ImgWidget3.setImage(self._np_image_to_q_image(debug[1]))
+
+    def _np_image_to_q_image(self, image):
+        global video_in
+
+        window_width = video_in.width
+        window_height = video_in.height
+
+        img_height, img_width, _img_colors = image.shape
+        scale_w = float(window_width) / float(img_width)
+        scale_h = float(window_height) / float(img_height)
+        scale = min([scale_w, scale_h])
+
+        if scale == 0:
+            scale = 1
+
+        image = cv2.resize(image, None, fx=scale, fy=scale,
+                           interpolation=cv2.INTER_CUBIC)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        height, width, bpc = image.shape
+        bytes_per_line = bpc * width
+        q_image = QtGui.QImage(image.data, width, height,
+                               bytes_per_line, QtGui.QImage.Format_RGB888)
+        return q_image
 
     def closeEvent(self, event):
         global video_in
