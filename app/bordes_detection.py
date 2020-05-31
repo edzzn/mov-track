@@ -5,12 +5,13 @@ from video_input import RegisteredObject
 
 
 class DetectionBordes:
-    def __init__(self, canny_th1=50, canny_th2=150, ksize_h=5, ksize_w=5, showTags=False):
+    def __init__(self, canny_th1=50, canny_th2=150, ksize_h=5, ksize_w=5, showTags=False, showCordenates=False):
         self.canny_th1 = canny_th1
         self.canny_th2 = canny_th2
         self.ksize_h = ksize_h
         self.ksize_w = ksize_w
         self.showTags = showTags
+        self.showCordenates = showCordenates
 
     def setCanny(self, canny_th1=None, canny_th2=None):
         if (canny_th1):
@@ -42,6 +43,10 @@ class DetectionBordes:
                 imgContorno,
                 countour
             )
+            self._draw_center(
+                imgContorno,
+                countour
+            )
 
         debugFrames.append(
             cv2.cvtColor(imgBlur, cv2.COLOR_GRAY2RGB)
@@ -62,6 +67,15 @@ class DetectionBordes:
             2
         )
 
+    def _draw_center(self, image, object):
+        cv2.circle(
+            image,
+            (object.x+(object.w//2), object.y+(object.h//2)),
+            1,
+            (0, 0, 255),
+            2
+        )
+
     def _draw_contour_name(self, image, object):
         if (self.showTags):
             cv2.putText(
@@ -69,7 +83,7 @@ class DetectionBordes:
                 object.object_type,
                 (object.x+(object.w//2)-10, object.y+(object.h//2) - 10),
                 cv2.FONT_HERSHEY_COMPLEX,
-                0.7,
+                0.8,
                 (0, 0, 0),
                 4
             )
@@ -77,9 +91,31 @@ class DetectionBordes:
                 image,
                 object.object_type,
                 (object.x+(object.w//2)-10, object.y+(object.h//2) - 10),
-                cv2.FONT_HERSHEY_COMPLEX, 0.7,
+                cv2.FONT_HERSHEY_COMPLEX,
+                0.8,
                 (0, 255, 0),
                 2
+            )
+
+        if(self.showCordenates):
+            # Draw coordanates
+            cv2.putText(
+                image,
+                f"({str(object.x)},{str(object.y)})",
+                (object.x+(object.w//2) + 7, object.y+(object.h//2) + 7),
+                cv2.FONT_HERSHEY_PLAIN,
+                1,
+                (0, 0, 0),
+                2
+            )
+            cv2.putText(
+                image,
+                f"({str(object.x)},{str(object.y)})",
+                (object.x+(object.w//2) + 7, object.y+(object.h//2) + 7),
+                cv2.FONT_HERSHEY_PLAIN,
+                1,
+                (0, 255, 0),
+                1
             )
 
     def getContornos(self, img, imgContorno):

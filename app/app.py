@@ -101,10 +101,13 @@ class Ui(QtWidgets.QMainWindow):
             canny_detector.showTags = True
 
     def cordenates_clicked(self):
+        global canny_detector
         if (not self.cordenatesButton.isChecked()):
             self.cordenatesButton.setChecked(False)
+            canny_detector.showCordenates = False
         else:
             self.cordenatesButton.setChecked(True)
+            canny_detector.showCordenates = True
 
     def screenshot_clicked(self):
         global video_in
