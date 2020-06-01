@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1101</width>
+    <width>1337</width>
     <height>868</height>
    </rect>
   </property>
@@ -30,6 +30,39 @@
        <item>
         <widget class="QWidget" name="widget_3" native="true">
          <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <widget class="QComboBox" name="cbxVideo">
+            <property name="font">
+             <font>
+              <family>Segoe UI</family>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
+            <property name="layoutDirection">
+             <enum>Qt::LeftToRight</enum>
+            </property>
+            <item>
+             <property name="text">
+              <string>Cargar Video</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Grabar Pantalla</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Webcam</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Camara Telefono</string>
+             </property>
+            </item>
+           </widget>
+          </item>
           <item>
            <widget class="QCommandLinkButton" name="startButton">
             <property name="enabled">
@@ -208,20 +241,6 @@
             </property>
            </spacer>
           </item>
-          <item>
-           <widget class="QComboBox" name="comboBox">
-            <item>
-             <property name="text">
-              <string>Sift</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Edge Detection</string>
-             </property>
-            </item>
-           </widget>
-          </item>
          </layout>
         </widget>
        </item>
@@ -242,21 +261,21 @@
      </widget>
     </item>
     <item>
-     <spacer name="verticalSpacer">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>20</width>
-        <height>40</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item>
      <widget class="QWidget" name="widget_4" native="true">
       <layout class="QHBoxLayout" name="horizontalLayout_4">
+       <item>
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
        <item>
         <spacer name="horizontalSpacer_2">
          <property name="orientation">
@@ -269,19 +288,6 @@
           <size>
            <width>40</width>
            <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <spacer name="verticalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
           </size>
          </property>
         </spacer>
@@ -602,6 +608,19 @@
      </widget>
     </item>
     <item>
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
      <spacer name="verticalSpacer_3">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -642,6 +661,17 @@
        </item>
        <item>
         <widget class="QLabel" name="label">
+         <property name="font">
+          <font>
+           <family>Segoe UI Black</family>
+           <pointsize>10</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="layoutDirection">
+          <enum>Qt::RightToLeft</enum>
+         </property>
          <property name="text">
           <string>Gráficos por computadora</string>
          </property>
@@ -673,7 +703,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1101</width>
+     <width>1337</width>
      <height>21</height>
     </rect>
    </property>

@@ -21,7 +21,6 @@ class VideoIn():
         self.img_counter = 0
         self.should_take_screenshot = False
         self.detector = None
-
         # Keep track of registered Objects
         self.objects_record = ObjectsRecord()
 
@@ -50,8 +49,74 @@ class VideoIn():
 
                         if(self.should_take_screenshot):
                             self._take_screenshot(img)
-                    else:
-                        print(self.queue.qsize())
+                    # else:
+                    #     print(self.queue.qsize())
+    def grabwebcam(self):
+        cap = cv2.VideoCapture(0) 
+        if (cap.isOpened()== False):
+            print("Error en cargar archivo") 
+        while(cap.isOpened()): 
+            while(self.running):
+                debugFrames = []
+                if self.queue.qsize() < 10:
+                    ret, frame = cap.read() 
+                    img = cv2.cvtColor(frame, cv2.COLOR_BGRA2BGR)
+                    if (self.detector):
+                        img = self.detector.detect(
+                            img,
+                            debugFrames=debugFrames,
+                            object_records=self.objects_record
+                        )
+                    self._addToQueue(img, debugFrames)
+                    if(self.recording):
+                        self._record(img)
+
+                    if(self.should_take_screenshot):
+                        self._take_screenshot(img)
+    def grabcellcam(self):
+        cap = cv2.VideoCapture(1) 
+        if (cap.isOpened()== False):
+            print("Error en cargar archivo") 
+        while(cap.isOpened()): 
+            while(self.running):
+                debugFrames = []
+                if self.queue.qsize() < 10:
+                    ret, frame = cap.read() 
+                    img = cv2.cvtColor(frame, cv2.COLOR_BGRA2BGR)
+                    if (self.detector):
+                        img = self.detector.detect(
+                            img,
+                            debugFrames=debugFrames,
+                            object_records=self.objects_record
+                        )
+                    self._addToQueue(img, debugFrames)
+                    if(self.recording):
+                        self._record(img)
+
+                    if(self.should_take_screenshot):
+                        self._take_screenshot(img)
+    def grabplayvideo(self,path):
+        cap = cv2.VideoCapture(path) 
+        if (cap.isOpened()== False):
+            print("Error en cargar archivo") 
+        while(cap.isOpened()): 
+            while(self.running):
+                debugFrames = []
+                if self.queue.qsize() < 10:
+                    ret, frame = cap.read() 
+                    img = cv2.cvtColor(frame, cv2.COLOR_BGRA2BGR)
+                    if (self.detector):
+                        img = self.detector.detect(
+                            img,
+                            debugFrames=debugFrames,
+                            object_records=self.objects_record
+                        )
+                    self._addToQueue(img, debugFrames)
+                    if(self.recording):
+                        self._record(img)
+
+                    if(self.should_take_screenshot):
+                        self._take_screenshot(img)
 
     def _addToQueue(self, image, debug):
         if (len(debug) == 0):
@@ -87,3 +152,4 @@ class VideoIn():
 
     def setDetector(self, detector):
         self.detector = detector
+

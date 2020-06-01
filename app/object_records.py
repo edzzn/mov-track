@@ -48,18 +48,31 @@ class ObjectsRecord():
         self.ignored_objects = []
 
     def _remove_similar_objects(self):
+        index_objects_to_ignore = set()
+        index_objects_to_keep = set()
+        for i, object_i in enumerate(self.objects):
+            for j, object_j in enumerate(self.objects):
+                if j > i:
+                    if(object_i._equals(object_j)):
+                        index_objects_to_ignore.add(j)
+                        index_objects_to_keep.add(i)
+                        break
+
         objects_to_keep = []
-        for object_i in self.objects:
-            should_keep = True
-            for saved_object in objects_to_keep:
-                if object_i._equals(saved_object):
-                    should_keep = False
-                    break
 
-            if should_keep:
-                objects_to_keep.append(object_i)
+        for i in range(len(self.objects)):
+            if (i in index_objects_to_keep):
+                objects_to_keep.append(self.objects[i])
 
-        self.objects = objects_to_keep
+        # self.objects = objects_to_keep
+
+        # ? Bellow code is present for debugging
+        # print(f"from: {len(self.objects)} - Keeping: {len(objects_to_keep)}")
+        # objects_to_ignore = []
+        # for i in range(len(self.objects)):
+        #     if (i in index_objects_to_ignore):
+        #         objects_to_ignore.append(self.objects[i])
+        # self.ignored_objects = objects_to_ignore
 
     def _add_path_to_objects(self, objects_from_last_frame):
         for object in self.objects:
@@ -69,9 +82,14 @@ class ObjectsRecord():
                     object.add_step_to_path(old_object.x, old_object.y)
 
     def add_all(self, records):
+        print(f"adding: {len(records)}")
         objects_from_last_frame = self.objects[:]
         self.objects = records
         self.ignored_objects = []
+
+        for object in records:
+            if(len(object.path) > 0):
+                print(f"Object with path:_ {object}")
 
         self._remove_similar_objects()
         self._add_path_to_objects(objects_from_last_frame)

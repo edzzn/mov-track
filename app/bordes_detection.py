@@ -95,7 +95,7 @@ class DetectionBordes:
         )
 
     def _draw_path(self, image, object, color=(255, 0, 255)):
-        # print(f"Path: {object.path}")
+        print(f"Path: {object.path}")
         for point in object.path:
             cv2.circle(
                 image,
