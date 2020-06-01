@@ -58,41 +58,50 @@ class Ui(QtWidgets.QMainWindow):
         self.timer.start(1)
         
     def cbx_selected(self, text):
+        global video_in
+
         self.selected_text = text
+        print(f"Cambiando Source a {text}")
         if(text=="Grabar Pantalla"):
-            global video_in
-            if (not video_in.hasTreadStarted):
-                capture_thread.start()
-                video_in.hasTreadStarted = True
+            video_in.set_source('screen')
+            # if (not video_in.hasTreadStarted):
+            #     capture_thread.start()
+            #     video_in.hasTreadStarted = True
 
         elif(text=="Cargar Video"):
             home_dir = str(Path.home())
             fname = QFileDialog.getOpenFileName(self, 'Abrir Archivo', home_dir)
             if fname[0]:
-                if (not video_in.hasTreadStarted):
-                    capture_thread_pv = threading.Thread(
-                        target=video_in.grabplayvideo, args=(fname[0],),
-                    )
-                    capture_thread_pv.start()
-                    video_in.hasTreadStarted = True
+                video_in.set_source(fname[0])
+
+                # if (not video_in.hasTreadStarted):
+                    
+                    # capture_thread_pv = threading.Thread(
+                    #     target=video_in.grabplayvideo, args=(fname[0],),
+                    # )
+                    # capture_thread_pv.start()
+                    # video_in.hasTreadStarted = True
              
         elif(text=="Webcam"):
-            if (not video_in.hasTreadStarted):
-                capture_thread_wc.start()
-                video_in.hasTreadStarted = True
+            
+            video_in.set_source(0)
+            # if (not video_in.hasTreadStarted):
+            #     capture_thread_wc.start()
+            #     video_in.hasTreadStarted = True
             
         else:
-            if (not video_in.hasTreadStarted):
-                capture_thread_cm.start()
-                video_in.hasTreadStarted = True
+            video_in.set_source(1)
+            # if (not video_in.hasTreadStarted):
+            #     capture_thread_cm.start()
+            #     video_in.hasTreadStarted = True
            
         
     def start_clicked(self):
-        # global video_in
+        global video_in
 
-        # if (not video_in.hasTreadStarted):
-        #     capture_thread.start()
-        #     video_in.hasTreadStarted = True
+        if (not video_in.hasTreadStarted):
+            capture_thread.start()
+            video_in.hasTreadStarted = True
 
         if (video_in.running):
             video_in.running = False
@@ -237,12 +246,12 @@ class Ui(QtWidgets.QMainWindow):
 capture_thread = threading.Thread(
     target=video_in.grab
 )
-capture_thread_wc = threading.Thread(
-    target=video_in.grabwebcam
-)
-capture_thread_cm = threading.Thread(
-    target=video_in.grabcellcam
-)
+# capture_thread_wc = threading.Thread(
+#     target=video_in.grabwebcam
+# )
+# capture_thread_cm = threading.Thread(
+#     target=video_in.grabcellcam
+# )
 
 # Iniciar instancia de QT
 app = QtWidgets.QApplication(sys.argv)

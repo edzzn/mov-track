@@ -82,14 +82,14 @@ class ObjectsRecord():
                     object.add_step_to_path(old_object.x, old_object.y)
 
     def add_all(self, records):
-        print(f"adding: {len(records)}")
+        # print(f"adding: {len(records)}")
         objects_from_last_frame = self.objects[:]
         self.objects = records
         self.ignored_objects = []
 
-        for object in records:
-            if(len(object.path) > 0):
-                print(f"Object with path:_ {object}")
+        # for object in records:
+        #     if(len(object.path) > 0):
+        #         print(f"Object with path:_ {object}")
 
         self._remove_similar_objects()
         self._add_path_to_objects(objects_from_last_frame)
