@@ -97,7 +97,7 @@ class Ui(QtWidgets.QMainWindow):
             self.recordButton.setText('Grabar')
             self.recordButton.setChecked(False)
             video_in.recording = False
-            video_in.stop()
+            video_in.stop_record()
 
         else:
             self.recordButton.setText('Detener')

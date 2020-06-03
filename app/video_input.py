@@ -28,9 +28,10 @@ class VideoIn():
         self.video_cap = None
 
     def _processingFrame(self, frame):
-        try:
+        if (isinstance(frame, np.ndarray)):
             debugFrames = []
             img = cv2.cvtColor(frame, cv2.COLOR_BGRA2BGR)
+            img = self._reshape_image(img)
             if (self.detector):
                 img = self.detector.detect(
                     img,
@@ -43,10 +44,6 @@ class VideoIn():
             if(self.should_take_screenshot):
                 self._take_screenshot(img)
 
-        except:
-            self.running = False
-            print("An exception occurred")
-
     def set_source(self, new_source):
         print(f"set_source(self, new_source): {new_source}")
         # Close video capture
@@ -56,12 +53,10 @@ class VideoIn():
 
     def grab(self):
         while True:
-            print(f"Showing: {self.source} - {datetime.datetime.now()}")
             if (self.source == 'screen'):
                 with mss.mss() as sct:
                     monitor = {'top': self.top, 'left': self.left,
                                'width': self.width, 'height': self.height}
-                    # while(True):
                     while(self.running):
                         if self.queue.qsize() < 10:
                             frame = np.array(sct.grab(monitor))
@@ -95,6 +90,33 @@ class VideoIn():
         else:
             self.queue.put((image, *debug))
 
+    def _reshape_image(self, image):
+        window_width = self.width
+        window_height = self.height
+
+        canvas = np.ones((window_height, window_width, 3), np.uint8)*0
+
+        img_height, img_width, _img_colors = image.shape
+        scale_w = float(window_width) / float(img_width)
+        scale_h = float(window_height) / float(img_height)
+        scale = min([scale_w, scale_h])
+
+        if scale == 0:
+            scale = 1
+
+        scaled_image = cv2.resize(image, None, fx=scale, fy=scale,
+                                  interpolation=cv2.INTER_CUBIC)
+
+        img_scaled_height, img_scaled_width, _img_scaled_colors = scaled_image.shape
+
+        y_offset = (window_height - img_scaled_height) // 2
+        x_offset = (window_width - img_scaled_width) // 2
+
+        canvas[y_offset:y_offset+scaled_image.shape[0],
+               x_offset:x_offset+scaled_image.shape[1]] = scaled_image
+
+        return canvas
+
     def _record(self, image):
         self.img_counter += 1
         if(self.writer):
@@ -108,6 +130,10 @@ class VideoIn():
         resolution = (self.width,  self.height)
         self.writer = cv2.VideoWriter(filename, codec, framerate, resolution)
         self.counter += 1
+
+    def stop_record(self):
+        if(self.writer):
+            self.writer.release()
 
     def stop(self):
         if(self.writer):
