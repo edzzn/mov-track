@@ -4,9 +4,7 @@
 ### Autores: 
 - [Abad Freddy](https://github.com/FreddieAbad), [Reinozo Edisson](https://github.com/edzzn)
 
-##### Descripcion detallada: [Informe](https://github.com/edzzn/mov-track/blob/master/Informe%20GPC%20-%20Abad%20y%20Reinozo.pdf)
-
-Herramientas utilizadas: 
+#### Descripcion detallada: [Informe](https://github.com/edzzn/mov-track/blob/master/Informe%20GPC%20-%20Abad%20y%20Reinozo.pdf)
 
 ### Funcionalidad 
 El mundo actual requiere cada vez más tener ambientes controlados. Estos ambientes
