@@ -37,4 +37,4 @@ apropiados para un entorno supervisado por capturas de video ya sea con una cali
 - Grabación de Video
 
 ### Resultado
-[Video](https://youtu.be/ztVkKfbCRrA)
+[Video](https://www.youtube.com/watch?v=2vl1zH3-BvM&t=30s)
