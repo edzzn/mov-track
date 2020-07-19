@@ -4,7 +4,7 @@
 ### Autores: 
 - [Abad Freddy](https://github.com/FreddieAbad), [Reinozo Edisson](https://github.com/edzzn)
 
-##### Descripcion detallada: [Informe]()
+##### Descripcion detallada: [Informe](https://github.com/edzzn/mov-track/blob/master/Informe%20GPC%20-%20Abad%20y%20Reinozo.pdf)
 
 Herramientas utilizadas: 
 
@@ -21,12 +21,16 @@ apropiados para un entorno supervisado por capturas de video ya sea con una cali
 - Medir la eficacia del algoritmo de rastreo ante uno o varios videos de prueba.
 ### Fases
 - Tratamiento y Segmentación de Imágenes
--- Frame original 
+  - Frame original 
+  
 ![1 frame original](https://user-images.githubusercontent.com/38579765/87864170-a0b13980-c92a-11ea-884a-f2f70e1cac7b.jpg)
--- Filtro Gaussiano
+
+  - Filtro Gaussiano
 ![2 filtro gaussiano](https://user-images.githubusercontent.com/38579765/87864171-a149d000-c92a-11ea-8115-c51b930dc447.png)
--- Metodo Canny
+
+  - Metodo Canny
 ![3 metodo canny](https://user-images.githubusercontent.com/38579765/87864174-a4dd5700-c92a-11ea-9a34-b2a287c070d3.png)
+
 - Aproximación de Objetos
 ![4 aprox](https://user-images.githubusercontent.com/38579765/87864176-a4dd5700-c92a-11ea-9149-fb49a482cea4.png)
 - Rastreo de objetos a través del cuadro de video
