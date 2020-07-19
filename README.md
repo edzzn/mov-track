@@ -21,21 +21,20 @@ apropiados para un entorno supervisado por capturas de video ya sea con una cali
 - Medir la eficacia del algoritmo de rastreo ante uno o varios videos de prueba.
 ### Fases
 - Tratamiento y Segmentación de Imágenes
-  - Frame original 
-  
+  - Frame original <br>
 ![1 frame original](https://user-images.githubusercontent.com/38579765/87864170-a0b13980-c92a-11ea-884a-f2f70e1cac7b.jpg)
 
-  - Filtro Gaussiano
+  - Filtro Gaussiano <br>
 ![2 filtro gaussiano](https://user-images.githubusercontent.com/38579765/87864171-a149d000-c92a-11ea-8115-c51b930dc447.png)
 
-  - Metodo Canny
+  - Metodo Canny <br>
 ![3 metodo canny](https://user-images.githubusercontent.com/38579765/87864174-a4dd5700-c92a-11ea-9a34-b2a287c070d3.png)
 
-- Aproximación de Objetos
+- Aproximación de Objetos <br>
 ![4 aprox](https://user-images.githubusercontent.com/38579765/87864176-a4dd5700-c92a-11ea-9149-fb49a482cea4.png)
-- Rastreo de objetos a través del cuadro de video
+- Rastreo de objetos a través del cuadro de video <br>
 ![5 rastreo](https://user-images.githubusercontent.com/38579765/87864177-a9097480-c92a-11ea-977f-ecf371a80deb.png)
-- Dibujo de las áreas estáticas y en movimiento.
+- Dibujo de las áreas estáticas y en movimiento. <br>
 ![6 - dibujo](https://user-images.githubusercontent.com/38579765/87864178-adce2880-c92a-11ea-888b-4493d67eb25c.png)
 - Grabación de Video
 
